@@ -288,7 +288,8 @@ S.normalize = (arg) => spawn(function*() {
 //     check: [String],
 //     copy: [String],
 //     range: [String],
-//     sum: [String]
+//     sum: [String],
+//     nosave: [String]
 //   }
 // }
 S.save = (arg) => spawn(function*() {
@@ -298,7 +299,9 @@ S.save = (arg) => spawn(function*() {
   let tasks = [];
 
   if (arg.inserts && arg.inserts.length) tasks.push(
-    arg.Model.collection [promisify]('insert')(arg.inserts [map](item => item [pick](fields)))
+    arg.Model.collection [promisify]('insert')(arg.inserts [map]((item) => (
+      item [pick](fields) [omit](arg.prop.nosave)
+    )))
   );
 
   if (arg.removeCmds && arg.removeCmds.length) tasks.push(
