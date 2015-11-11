@@ -1,6 +1,6 @@
 {
   "name": "merge-timerange",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Merge time ranges",
   "main": "index.js",
   "scripts": {

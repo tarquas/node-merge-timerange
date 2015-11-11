@@ -199,7 +199,7 @@ S.mergeTimeranges = (arg) => {
 //     sum: [String]
 //   }
 // }
-S.removeOverlaps = (arg) => spawn(function*() {
+S.normalize = (arg) => spawn(function*() {
   let maxIntervalMsec = arg.maxInterval ? arg.maxInterval * 1000 : 0;
 
   let byAll = arg.rangeItems [groupBy](rangeItem => JSON.stringify(
@@ -242,8 +242,12 @@ S.removeOverlaps = (arg) => spawn(function*() {
       maxInterval: arg.maxInterval,
       from: byAll[key],
       to: result,
-      prop: arg.prop
+      prop: arg.prop,
+      remove: arg.remove,
+      overwrite: arg.overwrite
     });
+
+    range.result = result;
 
     range.inserts = result [filter](item => {
       let start = item.start - 0;
@@ -265,7 +269,8 @@ S.removeOverlaps = (arg) => spawn(function*() {
     range.removes = foundEnds [map](item => item.item);
   })));
 
-  arg.rangeItems = ranges [map](range => range.inserts) [flatten]();
+  arg.rangeItems = ranges [map](range => range.result) [flatten]();
+  arg.inserts = ranges [map](range => range.inserts) [flatten]();
   arg.removes = ranges [map](range => range.removes) [flatten]();
   arg.removeCmds = ranges [map](range => range.removeCmds) [flatten]();
 

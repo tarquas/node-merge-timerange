@@ -61,6 +61,7 @@ module.exports = spawn(function*() {
 
   T.prop = {
     check: ['prop'],
+    head: ['head'],
     copy: ['prop'],
     sum: ['sum', 'sums.a'],
     range: ['range']
