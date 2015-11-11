@@ -1,6 +1,7 @@
 'use strict';
 
-/* global T, spawn, test */
+/* global T, spawn, test,
+      cloneDeep, forEach, extend */
 
 let Merge = require('..');
 let chalk = require('chalk');
@@ -19,7 +20,7 @@ module.exports = spawn(function*() {
 
       proj [test]('Query should match exactly', {
         _id: 0,
-        start: 1        
+        start: 1
       });
 
       return {sort: function(sort) {
@@ -42,7 +43,7 @@ module.exports = spawn(function*() {
 
       proj [test]('Query should match exactly', {
         _id: 0,
-        modifiedAt: 0        
+        modifiedAt: 0
       });
 
       return {sort: function(sort) {

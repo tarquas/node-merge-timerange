@@ -1,8 +1,8 @@
 'use strict';
 require('esfunctional');
 
-/* global spawn, catchify,
-      clone, cloneDeep, forEach, extend,
+/* global spawn, catchify, promisify,
+      values, clone, cloneDeep, forEach, extend,
       zipObject, pick, groupBy, fill,
       mapValues, reduce, map, filter, flatten */
 
@@ -189,7 +189,9 @@ S.mergeTimeranges = (arg) => {
 // {
 //   maxInterval: sec,
 //   rangeItems: [in, out] Array,
+//   inserts: [out] Array,
 //   removes: [out] Array,
+//   removeCmds: [out] Array,
 //   Model: MongooseModel,
 //   prop: {
 //     head: [String],
@@ -275,4 +277,33 @@ S.normalize = (arg) => spawn(function*() {
   arg.removeCmds = ranges [map](range => range.removeCmds) [flatten]();
 
   return true;
+});
+
+// {
+//   inserts: [out] Array,
+//   removeCmds: [out] Array,
+//   Model: MongooseModel,
+//   prop: {
+//     head: [String],
+//     check: [String],
+//     copy: [String],
+//     range: [String],
+//     sum: [String]
+//   }
+// }
+S.save = (arg) => spawn(function*() {
+  let fields = arg.prop [values]() [flatten]() [map](prop => prop.split('.')[0]);
+  fields.push('start', 'end', 'time');
+
+  let tasks = [];
+
+  if (arg.inserts && arg.inserts.length) tasks.push(
+    arg.Model.collection [promisify]('insert')(arg.inserts [map](item => item [pick](fields)))
+  );
+
+  if (arg.removeCmds && arg.removeCmds.length) tasks.push(
+    arg.Model.remove(arg.removeCmds)
+  );
+
+  return !tasks.length ? [] : yield Promise.all(tasks);
 });
