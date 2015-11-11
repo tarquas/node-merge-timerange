@@ -216,7 +216,7 @@ S.normalize = (arg) => spawn(function*() {
   let ranges = byAll [mapValues]((group) => group [reduce]((g1, g2) => ({
     start: g1.start < g2.start ? g1.start : g2.start,
     end: g1.end < g2.end ? g2.end : g1.end
-  })) [extend]({head: group[0] [pick](arg.prop.head)}));
+  }), {}) [extend]({head: group[0] [pick](arg.prop.head)}));
 
   yield Promise.all(ranges [map]((range, key) => spawn(function*() {
     let starting = yield arg.Model.findOne(
