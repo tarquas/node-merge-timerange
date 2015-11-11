@@ -3,7 +3,7 @@ require('esfunctional');
 
 /* global spawn, catchify, promisify,
       values, clone, cloneDeep, forEach, extend,
-      zipObject, pick, groupBy, fill,
+      zipObject, pick, omit, groupBy, fill,
       mapValues, reduce, map, filter, flatten */
 
 let S = module.exports;
@@ -215,12 +215,12 @@ S.normalize = (arg) => spawn(function*() {
 
   let ranges = byAll [mapValues]((group) => group [reduce]((g1, g2) => ({
     start: g1.start < g2.start ? g1.start : g2.start,
-    end: g1.end < g2.end ? g2.end : g1.end
+    end: g1.end > g2.end ? g1.end : g2.end
   }), {}) [extend]({head: group[0] [pick](arg.prop.head)}));
 
   yield Promise.all(ranges [map]((range, key) => spawn(function*() {
     let starting = yield arg.Model.findOne(
-      ({end: {$gte: new Date(range.start - maxIntervalMsec)}}) [extend](range.head),
+      ({}) [extend](range.head) [extend]({end: {$gte: new Date(range.start - maxIntervalMsec)}}),
       {_id: 0, start: 1}
     ).sort(sortByEnd).exec() [catchify]();
 
@@ -229,7 +229,7 @@ S.normalize = (arg) => spawn(function*() {
     startCond.$lte = new Date(range.end - 0 + maxIntervalMsec);
 
     let found = yield arg.Model.find(
-      ({start: startCond}) [extend](range.head),
+      ({}) [extend](range.head) [extend]({start: startCond}),
       {_id: 0, modifiedAt: 0}
     ).sort(sortByStart).exec() [catchify]();
 
@@ -305,7 +305,7 @@ S.save = (arg) => spawn(function*() {
   );
 
   if (arg.removeCmds && arg.removeCmds.length) tasks.push(
-    arg.Model.remove(arg.removeCmds)
+    arg.Model.remove({$or: arg.removeCmds})
   );
 
   return !tasks.length ? [] : yield Promise.all(tasks);
