@@ -1,0 +1,6 @@
+{
+  "threshold":     30,
+  "identifiers":   true,
+  "ignore":        "",
+  "suppress":      100
+}

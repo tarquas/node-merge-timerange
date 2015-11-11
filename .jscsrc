@@ -1,0 +1,6 @@
+{
+  "preset": "airbnb",
+  "fileExtensions": [ ".js", "jscs" ],
+  "maximumLineLength": 120,
+  "requireTrailingComma": false
+}
