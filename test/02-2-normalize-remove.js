@@ -21,7 +21,7 @@ module.exports = spawn(function*() {
   merge2.insertsShouldBe = T.removed.slice(1).concat(undefined);
   merge2.inserts [test]('merged inserts should match', merge2.insertsShouldBe);
 
-  merge2.removesShouldBe = T.from1.slice(1).concat(undefined);
+  merge2.removesShouldBe = T.from1.slice(0,1).concat(T.from1.slice(2)).concat(undefined);
   merge2.removes [test]('merged removes should match', merge2.removesShouldBe);
 
   merge2.removeCmdsShouldBe = (
@@ -33,12 +33,12 @@ module.exports = spawn(function*() {
   T.Model.collection = {};
 
   T.Model.collection.insert = (items, cb) => {
-    items [test]('merged rangeItems should match', merge2.insertsShouldBe);
+    items [test]('Model.collection.insert arguments should match', merge2.insertsShouldBe);
     cb(null, {});
   };
 
   T.Model.remove = (items) => new Promise((resolve) => {
-    items [test]('should merge into free ranges (default)', {$or: merge2.removeCmdsShouldBe});
+    items [test]('Model.remove arguments should match', {$or: merge2.removeCmdsShouldBe});
     resolve({});
   });
 

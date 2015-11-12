@@ -66,7 +66,7 @@ module.exports = spawn(function*() {
 
   yield Merge.normalize(merge1);
 
-  merge1.inserts [test]('merged rangeItems should match', [
+  merge1.inserts [test]('merged inserts should match', [
     {
       time: 10800,
       head: 1,
@@ -86,19 +86,19 @@ module.exports = spawn(function*() {
     undefined
   ]);
 
-  merge1.removes [test]('should merge into free ranges (default)', [
+  merge1.removes [test]('merged removes should match', [
     {
-      head: 1,
-      start: new Date('2015-01-01T10:00:00Z'),
-      end: new Date('2015-01-01T11:00:00Z'),
-      prop: 'a',
-      sum: 5
-    }, {
       head: 1,
       start: new Date('2015-01-01T12:00:00Z'),
       end: new Date('2015-01-01T13:00:00Z'),
       prop: 'a',
       sums: {a: 20}
+    }, {
+      head: 1,
+      start: new Date('2015-01-01T10:00:00Z'),
+      end: new Date('2015-01-01T11:00:00Z'),
+      prop: 'a',
+      sum: 5
     }, {
       head: 1,
       start: new Date('2015-01-01T16:00:00Z'),
@@ -108,15 +108,15 @@ module.exports = spawn(function*() {
     undefined
   ]);
 
-  merge1.removeCmds [test]('should merge into free ranges (default)', [
+  merge1.removeCmds [test]('merged removeCmds should match', [
     {
-      head: 1,
-      start: new Date('2015-01-01T10:00:00Z'),
-      end: new Date('2015-01-01T11:00:00Z')
-    }, {
       head: 1,
       start: new Date('2015-01-01T12:00:00Z'),
       end: new Date('2015-01-01T13:00:00Z')
+    }, {
+      head: 1,
+      start: new Date('2015-01-01T10:00:00Z'),
+      end: new Date('2015-01-01T11:00:00Z')
     }, {
       head: 1,
       start: new Date('2015-01-01T16:00:00Z'),

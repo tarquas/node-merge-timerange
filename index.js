@@ -199,7 +199,8 @@ S.mergeTimeranges = (arg) => {
 //     copy: [String],
 //     range: [String],
 //     sum: [String]
-//   }
+//   },
+//   nosort: Boolean
 // }
 S.normalize = (arg) => spawn(function*() {
   let maxIntervalMsec = arg.maxInterval ? arg.maxInterval * 1000 : 0;
@@ -240,9 +241,13 @@ S.normalize = (arg) => spawn(function*() {
       item: item [cloneDeep]()
     }]) [zipObject]();
 
+    let source = byAll[key];
+
+    if (!arg.nosort) source.sort((a, b) => a.start - b.start);
+
     S.mergeTimeranges({
       maxInterval: arg.maxInterval,
-      from: byAll[key],
+      from: source,
       to: result,
       prop: arg.prop,
       remove: arg.remove,
