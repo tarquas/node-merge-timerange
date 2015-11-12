@@ -21,7 +21,7 @@ module.exports = spawn(function*() {
   merge2.insertsShouldBe = T.removed.slice(1).concat(undefined);
   merge2.inserts [test]('merged inserts should match', merge2.insertsShouldBe);
 
-  merge2.removesShouldBe = T.from1.slice(0,1).concat(T.from1.slice(2)).concat(undefined);
+  merge2.removesShouldBe = T.from1.slice(0, 1).concat(T.from1.slice(2)).concat(undefined);
   merge2.removes [test]('merged removes should match', merge2.removesShouldBe);
 
   merge2.removeCmdsShouldBe = (
