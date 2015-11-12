@@ -38,7 +38,7 @@ module.exports = spawn(function*() {
   };
 
   T.Model.remove = (items) => new Promise((resolve) => {
-    items [test]('should merge into free ranges (default)', merge2.removeCmdsShouldBe);
+    items [test]('should merge into free ranges (default)', {$or: merge2.removeCmdsShouldBe});
     resolve({});
   });
 
