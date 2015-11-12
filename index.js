@@ -200,7 +200,10 @@ S.mergeTimeranges = (arg) => {
 //     range: [String],
 //     sum: [String]
 //   },
-//   nosort: Boolean
+//   nosort: Boolean,
+//   get: Boolean,
+//   remove: Boolean,
+//   overwrite: Boolean
 // }
 S.normalize = (arg) => spawn(function*() {
   let maxIntervalMsec = arg.maxInterval ? arg.maxInterval * 1000 : 0;
@@ -220,17 +223,21 @@ S.normalize = (arg) => spawn(function*() {
   }), {}) [extend]({head: group[0] [pick](arg.prop.head)}));
 
   yield Promise.all(ranges [map]((range, key) => spawn(function*() {
+
+    //jshint maxcomplexity: 8
+
     let starting = yield arg.Model.findOne(
       ({}) [extend](range.head) [extend]({end: {$gte: new Date(range.start - maxIntervalMsec)}}),
       {_id: 0, start: 1}
     ).sort(sortByEnd).exec() [catchify]();
 
-    let startCond = {};
-    if (starting) startCond.$gte = starting.start;
-    startCond.$lte = new Date(range.end - 0 + maxIntervalMsec);
+    let sEnd = new Date(range.end - 0 + maxIntervalMsec);
 
-    let found = yield arg.Model.find(
-      ({}) [extend](range.head) [extend]({start: startCond}),
+    let found = !starting || starting.start > sEnd ? [] : yield arg.Model.find(
+      ({}) [extend](range.head) [extend]({start: {
+        $gte: starting.start,
+        $lte: sEnd
+      }}),
       {_id: 0, modifiedAt: 0}
     ).sort(sortByStart).exec() [catchify]();
 
@@ -245,7 +252,7 @@ S.normalize = (arg) => spawn(function*() {
 
     if (!arg.nosort) source.sort((a, b) => a.start - b.start);
 
-    S.mergeTimeranges({
+    if (!arg.get) S.mergeTimeranges({
       maxInterval: arg.maxInterval,
       from: source,
       to: result,
@@ -256,7 +263,7 @@ S.normalize = (arg) => spawn(function*() {
 
     range.result = result;
 
-    range.inserts = result [filter](item => {
+    range.inserts = arg.get ? [] : result [filter](item => {
       let start = item.start - 0;
       let fItem = foundEnds[start];
       let end = fItem && fItem.end;
@@ -265,7 +272,7 @@ S.normalize = (arg) => spawn(function*() {
       return false;
     });
 
-    range.removeCmds = foundEnds [map]((item, start) => (
+    range.removeCmds = arg.get ? [] : foundEnds [map]((item, start) => (
       ({}) [extend](range.head)
       [extend]({
         start: new Date(start - 0),
@@ -273,7 +280,7 @@ S.normalize = (arg) => spawn(function*() {
       })
     ));
 
-    range.removes = foundEnds [map](item => item.item);
+    range.removes = arg.get ? [] : foundEnds [map](item => item.item);
   })));
 
   arg.rangeItems = ranges [map](range => range.result) [flatten]();
