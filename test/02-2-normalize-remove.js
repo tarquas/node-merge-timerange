@@ -18,17 +18,17 @@ module.exports = spawn(function*() {
 
   yield Merge.normalize(merge2);
 
-  merge2.insertsShouldBe = T.removed.concat(undefined);
-  merge2.inserts [test]('merged rangeItems should match', merge2.insertsShouldBe);
+  merge2.insertsShouldBe = T.removed.slice(1).concat(undefined);
+  merge2.inserts [test]('merged inserts should match', merge2.insertsShouldBe);
 
-  merge2.removesShouldBe = T.from1.concat(undefined);
-  merge2.removes [test]('should merge into free ranges (default)', merge2.removesShouldBe);
+  merge2.removesShouldBe = T.from1.slice(1).concat(undefined);
+  merge2.removes [test]('merged removes should match', merge2.removesShouldBe);
 
   merge2.removeCmdsShouldBe = (
-    T.from1.map(item => item [pick]('head', 'start', 'end'))
-  ).concat(undefined);
+    merge2.removesShouldBe.map(item => item && item [pick]('head', 'start', 'end'))
+  );
 
-  merge2.removeCmds [test]('should merge into free ranges (default)', merge2.removeCmdsShouldBe);
+  merge2.removeCmds [test]('merged remove cmds should match', merge2.removeCmdsShouldBe);
 
   T.Model.collection = {};
 

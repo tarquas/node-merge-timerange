@@ -37,7 +37,7 @@ module.exports = spawn(function*() {
   T.from2 = [
     {
       head: 1,
-      start: new Date('2015-01-01T10:30:00Z'),
+      start: new Date('2015-01-01T11:00:00Z'),
       end: new Date('2015-01-01T12:30:00Z'),
       prop: 'a',
       sum: 6,

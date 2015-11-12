@@ -23,11 +23,11 @@ module.exports = spawn(function*() {
     remove: true
   });
 
-  T.removed [test]('should merge into free ranges (default)', [
+  T.removed [test]('should remove ranges', [
     {
       start: new Date('2015-01-01T10:00:00.000Z'),
-      end: new Date('2015-01-01T10:30:00.000Z'),
-      time: 1800,
+      end: new Date('2015-01-01T11:00:00.000Z'),
+      time: 3600,
       head: 1,
       prop: 'a',
       sum: 0,

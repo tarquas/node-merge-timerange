@@ -98,7 +98,7 @@ S.mergeTimeranges = (arg) => {
   if (!arg.prop) arg.prop = {};
 
   while (from) {
-    while (to && from.start - max >= to.end) to = tos[++toIdx];
+    while (to && from.start - max > to.end) to = tos[++toIdx];
 
     if (!to || from.end < to.start - max) {
       if (!arg.remove) {
@@ -210,8 +210,8 @@ S.normalize = (arg) => spawn(function*() {
 
   let sort = arg.prop.head ? arg.prop.head [zipObject](new Array(arg.prop.head.length) [fill](1)) : {};
 
-  let sortByStart = ({}) [extend](sort) [extend]({start: 1, _id: 1});
-  let sortByEnd = ({}) [extend](sort) [extend]({end: 1, _id: 1});
+  let sortByStart = ({}) [extend](sort) [extend]({start: 1});
+  let sortByEnd = ({}) [extend](sort) [extend]({end: 1});
 
   let ranges = byAll [mapValues]((group) => group [reduce]((g1, g2) => ({
     start: g1.start < g2.start ? g1.start : g2.start,

@@ -13,7 +13,7 @@ module.exports = spawn(function*() {
     findOne: function(query, proj) {
       query [test]('Query should match exactly', {
         end: {
-          $gte: new Date('2015-01-01T10:30:00.000Z')
+          $gte: new Date('2015-01-01T11:00:00.000Z')
         },
         head: 1
       });
@@ -24,7 +24,7 @@ module.exports = spawn(function*() {
       });
 
       return {sort: function(sort) {
-        sort [test]('Sort must match', {head: 1, end: 1, _id: 1});
+        sort [test]('Sort must match', {head: 1, end: 1});
 
         return {exec: () => new Promise((resolve) => {
           resolve({start: new Date('2015-01-01T10:00:00Z')});
@@ -47,7 +47,7 @@ module.exports = spawn(function*() {
       });
 
       return {sort: function(sort) {
-        sort [test]('Sort must match', {head: 1, start: 1, _id: 1});
+        sort [test]('Sort must match', {head: 1, start: 1});
 
         return {exec: () => new Promise((resolve) => {
           resolve(T.from1 [cloneDeep]() [forEach]((item) => {
