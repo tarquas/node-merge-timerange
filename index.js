@@ -3,7 +3,7 @@ require('esfunctional');
 
 /* global spawn, catchify, promisify,
       values, clone, cloneDeep, forEach, extend,
-      zipObject, pick, omit, groupBy, fill,
+      zipObject, fromPairs, pick, omit, groupBy, fill,
       mapValues, reduce, map, filter, flatten */
 
 let S = module.exports;
@@ -246,7 +246,7 @@ S.normalize = (arg) => spawn(function*() {
     let foundEnds = result.map(item => [item.start - 0, {
       end: item.end - 0,
       item: item [cloneDeep]()
-    }]) [zipObject]();
+    }]) [fromPairs]();
 
     let source = byAll[key];
 
