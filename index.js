@@ -1,5 +1,4 @@
 'use strict';
-require('esfunctional');
 
 /* global spawn, catchify, promisify,
       values, clone, cloneDeep, forEach, extend,
