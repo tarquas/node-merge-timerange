@@ -1,11 +1,13 @@
 'use strict';
 
-/* global T, spawn, test,
-      cloneDeep, pick, chalk */
+/* global test, cloneDeep, pick, chalk */
 
+let T = require('.');
 let Merge = require('..');
 
-module.exports = spawn(function*() {
+let S = module.exports;
+
+S.test = T.by(function*() {
   console.log(chalk.bold.yellow('  Mongoose > Normalize Removed Ranges'));
 
   let merge2 = {

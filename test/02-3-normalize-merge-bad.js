@@ -1,11 +1,14 @@
 'use strict';
 
-/* global T, catcha, pro, spawn, test,
+/* global catcha, pro, test,
       cloneDeep, forEach, extend, chalk */
 
+let T = require('.');
 let Merge = require('..');
 
-module.exports = spawn(function*() {
+let S = module.exports;
+
+S.test = T.by(function*() {
   console.log(chalk.bold.yellow('  Mongoose > Normalize Merged Ranges > Overlapping'));
 
   T.Model = {
