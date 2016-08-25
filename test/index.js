@@ -1,9 +1,7 @@
 'use strict';
 require('esfunctional');
 
-/* global spawn, thena, catcha */
-
-let chalk = require('chalk');
+/* global spawn, thena, catcha, chalk */
 
 global.T = {};
 

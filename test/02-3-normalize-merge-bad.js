@@ -1,18 +1,18 @@
 'use strict';
 
-/* global T, spawn, test,
+/* global T, catcha, pro, spawn, test,
       cloneDeep, forEach, extend, chalk */
 
 let Merge = require('..');
 
 module.exports = spawn(function*() {
-  console.log(chalk.bold.yellow('  Mongoose > Normalize Merged Ranges'));
+  console.log(chalk.bold.yellow('  Mongoose > Normalize Merged Ranges > Overlapping'));
 
   T.Model = {
     findOne: function(query, proj) {
       query [test]('Query should match exactly', {
         end: {
-          $gte: new Date('2015-01-01T11:00:00.000Z')
+          $gte: new Date('2015-01-01T10:00:00.000Z')
         },
         head: 1
       });
@@ -39,7 +39,7 @@ module.exports = spawn(function*() {
       query [test]('Query should match exactly', {
         start: {
           $gte: new Date('2015-01-01T10:00:00.000Z'),
-          $lte: new Date('2015-01-01T19:00:00.000Z')
+          $lte: new Date('2015-01-01T17:00:00.000Z')
         },
         head: 1
       });
@@ -65,35 +65,7 @@ module.exports = spawn(function*() {
     }
   };
 
-  let merge1 = {
-    Model: T.Model,
-    rangeItems: T.from2 [cloneDeep](),
-    prop: T.prop
-  };
-
-  yield* Merge.normalize(merge1);
-
-  merge1.inserts [test]('merged inserts should match', [
-    {
-      time: 10800,
-      head: 1,
-      start: new Date('2015-01-01T10:00:00.000Z'),
-      end: new Date('2015-01-01T13:00:00.000Z'),
-      prop: 'a',
-      sums: {a: 30},
-      sum: 11
-    }, {
-      time: 14400,
-      head: 1,
-      start: new Date('2015-01-01T15:00:00.000Z'),
-      end: new Date('2015-01-01T19:00:00.000Z'),
-      prop: 'b',
-      range: {min: 2, max: 6}
-    },
-    undefined
-  ]);
-
-  merge1.removes [test]('merged removes should match', [
+  T.fromBad = [
     {
       head: 1,
       start: new Date('2015-01-01T12:00:00Z'),
@@ -108,36 +80,23 @@ module.exports = spawn(function*() {
       sum: 5
     }, {
       head: 1,
+      start: new Date('2015-01-01T12:30:00Z'),
+      end: new Date('2015-01-01T12:50:00Z'),
+      prop: 'a'
+    }, {
+      head: 1,
       start: new Date('2015-01-01T16:00:00Z'),
       end: new Date('2015-01-01T17:00:00Z'),
       prop: 'b'
-    },
-    undefined
-  ]);
+    }
+  ];
 
-  merge1.removeCmds [test]('merged removeCmds should match', [
-    {
-      head: 1,
-      start: new Date('2015-01-01T12:00:00Z'),
-      end: new Date('2015-01-01T13:00:00Z')
-    }, {
-      head: 1,
-      start: new Date('2015-01-01T10:00:00Z'),
-      end: new Date('2015-01-01T11:00:00Z')
-    }, {
-      head: 1,
-      start: new Date('2015-01-01T16:00:00Z'),
-      end: new Date('2015-01-01T17:00:00Z')
-    },
-    undefined
-  ]);
-
-  let merge2 = {
+  let mergeBad = {
     Model: T.Model,
-    rangeItems: T.from2 [cloneDeep](),
-    prop: T.prop,
-    remove: true
+    rangeItems: T.fromBad,
+    prop: T.prop
   };
 
-  yield* Merge.normalize(merge2);
+  let result = yield Merge.normalize(mergeBad) [pro]() [catcha]();
+  result [test]('Should throw rangeCheckFailed message', ['rangeCheckFailed']);
 });

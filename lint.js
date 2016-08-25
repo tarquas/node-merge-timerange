@@ -1,36 +1,50 @@
+'use strict';
+require('esfunctional');
+
 // code linter
 //   use: `node lint`
 
-var child = require('child_process');
-var chalk = require('chalk');
+/* global spawn, main, finalizer, halt, errstack, out, chalk */
 
-var paths = ['index.js', 'test'];
+let child = require('child_process');
 
-function exec(bin, args) {
-  return child.spawnSync(bin, args, {stdio: [process.stdin, process.stdout, process.stderr], cwd: __dirname}).status;
-}
+let paths = ['index.js', 'lint.js', 'test'];
 
-process.exit(
-  (
+let S = module.exports;
 
-    console.log(chalk.bold.yellow('JS CodeStyle'), chalk.gray('code formatting')),
+S.exec = (bin, args) => spawn(function*() {
+  let lintingFailed = new Error('Linting failed') [errstack](5, 1);
+  let proc = child.spawn(bin, args, {stdio: 'inherit', cwd: __dirname});
+  S.currentProc = proc;
+  let evt = yield proc [event](['exit', 'close'], ['error', 'unhandledException']);
+  S.currentProc = null;
+  if (evt.data) throw lintingFailed;
+});
 
-    exec('node_modules/.bin/jscs', ['-c', '.jscsrc'].concat(paths))
+S.init = spawn(function*() {
+  out.setNs('lint');
 
-  ) || (console.log(chalk.bold.green('\n+ Code Style OK\n')), 0) || (
+  out.info(chalk.bold.yellow('JS CodeStyle'), chalk.gray('code formatting'));
+  yield S.exec('node_modules/.bin/jscs', ['-c', '.jscsrc'].concat(paths));
+  console.log(chalk.bold.green('\n+ Code Style OK\n'));
 
-    console.log(chalk.bold.yellow('JSHint'), chalk.gray('code syntax')),
+  out.info(chalk.bold.yellow('JSHint'), chalk.gray('code syntax'));
 
-    exec('node_modules/.bin/jshint', [
-      '-c', '.jshintrc',
-      '--reporter', 'node_modules/jshint-stylish-ex/stylish.js'
-    ].concat(paths))
+  yield S.exec('node_modules/.bin/jshint', [
+    '-c', '.jshintrc',
+    '--reporter', 'node_modules/jshint-stylish-ex/stylish.js'
+  ].concat(paths));
 
-  ) || (
+  out.info(chalk.bold.yellow('JS Inspect'), chalk.gray('copy & paste detector'));
+  yield S.exec('node_modules/.bin/jsinspect', [].concat(paths));
 
-    console.log(chalk.bold.yellow('JS Inspect'), chalk.gray('copy & paste detector')),
+  console.log(chalk.bold.green('\n===== All Linters Succeeded ====='));
+});
 
-    exec('node_modules/.bin/jsinspect', [].concat(paths))
+S.exit = () => spawn(function() {
+  S.init [halt]();
+  if (S.currentProc) S.currentProc.kill('SIGTERM');
+});
 
-  ) || (console.log(chalk.bold.green('\n===== All Linters Succeeded =====')), 0)
-);
+module [main](S.init);
+module [finalizer](S.exit);

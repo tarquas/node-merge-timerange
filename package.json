@@ -1,6 +1,6 @@
 {
   "name": "merge-timerange",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Merge time ranges",
   "main": "index.js",
   "scripts": {
@@ -23,11 +23,12 @@
   },
   "homepage": "https://github.com/tarquas/node-merge-timerange#readme",
   "dependencies": {
+    "esfunctional": "1.8.4"
   },
   "devDependencies": {
-    "jscs": "2.5.1",
-    "jshint": "2.8.0",
+    "jscs": "3.0.6",
+    "jshint": "2.9.2",
     "jshint-stylish-ex": "0.2.0",
-    "jsinspect": "0.7.1"
+    "jsinspect": "0.8.0"
   }
 }

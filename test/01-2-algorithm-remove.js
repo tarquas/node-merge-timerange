@@ -1,22 +1,21 @@
 'use strict';
 
-/* global T, spawn, test */
+/* global T, spawn, test, chalk */
 
 let Merge = require('..');
-let chalk = require('chalk');
 
 module.exports = spawn(function*() {
   console.log(chalk.bold.yellow('  Timerange Algorithm > Remove'));
 
   T.removed = [];
 
-  yield Merge.mergeTimeranges({
+  yield* Merge.mergeTimeranges({
     from: T.from1,
     to: T.removed,
     prop: T.prop
   });
 
-  yield Merge.mergeTimeranges({
+  yield* Merge.mergeTimeranges({
     from: T.from2,
     to: T.removed,
     prop: T.prop,

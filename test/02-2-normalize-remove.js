@@ -1,10 +1,9 @@
 'use strict';
 
 /* global T, spawn, test,
-      cloneDeep, pick */
+      cloneDeep, pick, chalk */
 
 let Merge = require('..');
-let chalk = require('chalk');
 
 module.exports = spawn(function*() {
   console.log(chalk.bold.yellow('  Mongoose > Normalize Removed Ranges'));
@@ -16,7 +15,7 @@ module.exports = spawn(function*() {
     remove: true
   };
 
-  yield Merge.normalize(merge2);
+  yield* Merge.normalize(merge2);
 
   merge2.insertsShouldBe = T.removed.slice(1).concat(undefined);
   merge2.inserts [test]('merged inserts should match', merge2.insertsShouldBe);
@@ -42,5 +41,5 @@ module.exports = spawn(function*() {
     resolve({});
   });
 
-  yield Merge.save(merge2);
+  yield* Merge.save(merge2);
 });

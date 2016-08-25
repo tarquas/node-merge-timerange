@@ -1,7 +1,8 @@
 'use strict';
+require('esfunctional');
 
 /* global spawn, catchify, promisify,
-      values, clone, cloneDeep, forEach, extend,
+      values, clone, cloneDeep, extend,
       zipObject, fromPairs, pick, omit, groupBy, fill,
       mapValues, reduce, map, filter, flatten */
 
@@ -81,7 +82,7 @@ S.propsSet = (val, to, props) => {
 //   remove: Boolean,
 //   overwrite: Boolean
 // }
-S.mergeTimeranges = (arg) => {
+S.mergeTimeranges = function*(arg) {
 
   //jshint maxcomplexity: 19
 
@@ -140,9 +141,10 @@ S.mergeTimeranges = (arg) => {
 
     let needMerge = !arg.remove;
 
-    if (needMerge && arg.prop.check) arg.prop.check [forEach]((prop) => needMerge = (
-      from[prop] === to[prop]
-    ));
+    if (needMerge && arg.prop.check) for (let prop of arg.prop.check) {
+      needMerge = from[prop] === to[prop];
+      if (!needMerge) break;
+    }
 
     if (needMerge) {
       if (from.start < to.start) to.start = from.start;
@@ -200,11 +202,12 @@ S.mergeTimeranges = (arg) => {
 //     sum: [String]
 //   },
 //   nosort: Boolean,
+//   nocheck: Boolean,
 //   get: Boolean,
 //   remove: Boolean,
 //   overwrite: Boolean
 // }
-S.normalize = (arg) => spawn(function*() {
+S.normalize = function*(arg) {
   let maxIntervalMsec = arg.maxInterval ? arg.maxInterval * 1000 : 0;
 
   let byAll = arg.rangeItems [groupBy](rangeItem => JSON.stringify(
@@ -223,7 +226,7 @@ S.normalize = (arg) => spawn(function*() {
 
   yield Promise.all(ranges [map]((range, key) => spawn(function*() {
 
-    //jshint maxcomplexity: 8
+    //jshint maxcomplexity: 12
 
     let starting = yield arg.Model.findOne(
       ({}) [extend](range.head) [extend]({end: {$gte: new Date(range.start - maxIntervalMsec)}}),
@@ -249,9 +252,20 @@ S.normalize = (arg) => spawn(function*() {
 
     let source = byAll[key];
 
-    if (!arg.nosort) source.sort((a, b) => a.start - b.start);
+    if (source.length) {
+      if (!arg.nosort) source.sort((a, b) => a.start - b.start);
 
-    if (!arg.get) S.mergeTimeranges({
+      if (!arg.nocheck) {
+        let endpr = source[0].end;
+
+        for (let i = 1; i < source.length; i++) {
+          if (source[i].start < endpr) throw ['rangeCheckFailed'];
+          endpr = source[i].end;
+        }
+      }
+    }
+
+    if (!arg.get) yield* S.mergeTimeranges({
       maxInterval: arg.maxInterval,
       from: source,
       to: result,
@@ -288,7 +302,7 @@ S.normalize = (arg) => spawn(function*() {
   arg.removeCmds = ranges [map](range => range.removeCmds) [flatten]();
 
   return true;
-});
+};
 
 // {
 //   inserts: [out] Array,
@@ -303,7 +317,7 @@ S.normalize = (arg) => spawn(function*() {
 //     nosave: [String]
 //   }
 // }
-S.save = (arg) => spawn(function*() {
+S.save = function*(arg) {
   let fields = arg.prop [values]() [flatten]() [map](prop => prop.split('.')[0]);
   fields.push('start', 'end', 'time');
 
@@ -320,4 +334,4 @@ S.save = (arg) => spawn(function*() {
   );
 
   return !tasks.length ? [] : yield Promise.all(tasks);
-});
+};

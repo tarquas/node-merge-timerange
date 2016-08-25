@@ -31,6 +31,8 @@
   // Require capitalized names for constructor functions.
   "newcap": true,
 
+  "noyield": true,
+
   // Enforce use of single quotation marks for strings.
   "quotmark": "single",
 
